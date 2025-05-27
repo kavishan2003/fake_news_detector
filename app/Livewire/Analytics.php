@@ -2,7 +2,7 @@
 
 namespace App\Livewire;
 
-use App\Models\Article;
+
 use Livewire\Component;
 use App\Models\FakenessCheck; // Assuming you have an Article model
 use Illuminate\Support\Facades\DB; // For database operations

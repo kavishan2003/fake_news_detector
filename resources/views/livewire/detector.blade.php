@@ -11,13 +11,13 @@
             <div>
                 <ul class="flex space-x-8">
                     <li>
-                        <a href="#"
+                        <a href="/"
                             class="text-gray-700 hover:text-blue-600 font-semibold text-lg transition-colors duration-200">
                             Home
                         </a>
                     </li>
                     <li>
-                        <a href="{{ url('/analytics') }}"
+                        <a wire:navigate href="{{ route('analytics') }}"
                             class="text-gray-700 hover:text-blue-600 font-semibold text-lg transition-colors duration-200">
                             Analytics
                         </a>

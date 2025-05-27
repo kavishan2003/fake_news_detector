@@ -10,7 +10,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/analytics', Analytics::class)->name('analytics');
 
-Route::get('/{slug}', FakenessDetail::class)->name('fakeness.detail');
-
-Route::get('/analytics', Analytics::class);
+Route::get('/abc/{slug}', FakenessDetail::class)->name('fakeness.detail');
