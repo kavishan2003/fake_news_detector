@@ -27,10 +27,10 @@
         </div>
     </nav>
     <div
-        class="container mx-auto px-4 py-10 min-h-screen flex flex-col lg:flex-row items-center lg:items-start justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
+        class="container mx-auto px-4 py-20 min-h-screen flex flex-col lg:flex-row items-center lg:items-start justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
 
 
-        {{-- Top Navbar --}}
+       
 
 
         {{-- Main Content --}}
@@ -70,7 +70,7 @@
                         </svg>
                         <span wire:loading.remove wire:target="checkFakeness">Check Authenticity</span>
                         <span wire:loading wire:target="checkFakeness">
-                            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white flex items-center text-center"
+                            <svg class="animate-spin mx-auto h-5 w-5 text-white flex items-center text-center"
                                 xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
                                     stroke-width="4"></circle>
