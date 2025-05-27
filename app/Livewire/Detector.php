@@ -21,7 +21,7 @@ class Detector extends Component
     public ?int $fakenessScore = null;
     public string $error = '';
     // public $history;
-    public $perPage = 5;
+    public $perPage = 6;
     public ?string $ogTitle = null;
     public ?string $ogImage = null;
     public ?string $explanation = null;
@@ -106,7 +106,7 @@ class Detector extends Component
             $this->ogDescription = $cachedData['description'];
             // Since we're loading from cache, ensure the UI updates.
             // This might still trigger a refreshWindow if needed for other elements.
-            $this->dispatchBrowserEvent('fakeness-score-shown');
+            // $this->dispatchBrowserEvent('fakeness-score-shown');
             return;
         }
 
@@ -155,6 +155,7 @@ EOD;
             $answer = $response->json('choices.0.message.content') ?? '';
             preg_match('/\d{1,3}/', $answer, $matches);
             $score = isset($matches[0]) ? min((int)$matches[0], 100) : null;
+            // $score = 80;
 
             if ($score === null) {
                 $this->error = 'Unable to extract a score from the AI response. Raw response: ' . $answer;
@@ -188,12 +189,14 @@ EOD;
                 'slug' => $slug,
             ]);
 
-            $this->refreshHistory();
+            // $this->refreshHistory();
             $this->url = '';
+             $this->dispatch('fakeness-check-complete');
 
-            $this->dispatch('fakeness-check-complete'); // Changed event name for clarity
+            // $this->dispatch('fakeness-check-complete'); // Changed event name for clarity
+            
             // Dispatch browser event after a successful check and data saving
-            // $this->dispatchBrowserEvent('fakeness-score-shown');
+            // $this->dispatchBrowserEvent('fakeness-check-complete');
 
         } catch (\Exception $e) {
             $this->error = 'Failed to process check: ' . $e->getMessage();
@@ -213,6 +216,14 @@ EOD;
         $timestamp = now()->format('YmdHis');
         return Str::slug($title) . '-' . $timestamp;
     }
+    
+      // delete function
+     public function deleteARC($id)
+    {
+        $delete = FakenessCheck::findOrFail($id);
+        $delete->delete();
+        session()->flash('message', 'Article deleted successfully.');
+    }
 
    
 
@@ -221,16 +232,14 @@ EOD;
         // $history = FakenessCheck::select('url')->latest()->paginate(5);
         return view('livewire.detector', [
             // 'history' => $this->history,
-            'history' => FakenessCheck::latest()->paginate(3),
+            'history' => FakenessCheck::latest()->paginate($this->perPage),
             // 'recentArticles' => $this->getRecentArticles()
         ]);
     }
-
-    // You can remove the rendered() method or use it for actual browser events
+    
     public function rendered()
     {
-        // If you need to trigger a JS function after every render, you could do it here
-        // For example, if you have a JS function that needs to run each time the DOM updates.
+       
 
     }
 
@@ -239,8 +248,8 @@ EOD;
         $this->reset(['fakenessScore', 'error', 'explanation', 'ogTitle', 'ogImage', 'ogDescription']);
     }
 
-    // public function getPaginatedHistoryProperty() // Livewire will automatically make this available as $this->paginatedHistory
-    // {
-    //     return FakenessCheck::latest()->paginate($this->perPage);
-    // }
+
+  
+
+    
 }
