@@ -55,7 +55,7 @@
                     </div>
                 </div>
 
-                <div class="mt-12">
+                {{-- <div class="mt-12">
                     <h2 class="text-3xl font-extrabold text-gray-800 mb-8 text-center">Domain Statistics</h2>
                     @if (count($domainAnalytics) > 0)
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -79,7 +79,7 @@
                     @else
                         <p class="text-center text-gray-600 text-lg">No article data available for analytics yet.</p>
                     @endif
-                </div>
+                </div> --}}
             </div>
         </div>
     </div>

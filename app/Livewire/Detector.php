@@ -21,7 +21,7 @@ class Detector extends Component
     public ?int $fakenessScore = null;
     public string $error = '';
     // public $history;
-    public $perPage = 6;
+    public $perPage = 12;
     public ?string $ogTitle = null;
     public ?string $ogImage = null;
     public ?string $explanation = null;
@@ -134,14 +134,14 @@ class Detector extends Component
 
             // 4. Prepare prompt and call OpenAI for fakeness score
             $prompt = <<<EOD
-Based on the following news article metadata and URL, determine how fake this news article is.
-Give me a percentage score from 0 to 100%, where 100% is completely fake and 0% is completely true and factual.
-Just give me a percentage number only, no other text at all. Respond with only a number and no text.
+                Based on the following news article metadata and URL, determine how fake this news article is.
+                Give me a percentage score from 0 to 100%, where 100% is completely fake and 0% is completely true and factual.
+                Just give me a percentage number only, no other text at all. Respond with only a number and no text.
 
-URL: {$this->url}
-Title: {$this->ogTitle}
-Description: {$this->ogDescription}
-EOD;
+                URL: {$this->url}
+                Title: {$this->ogTitle}
+                Description: {$this->ogDescription}
+                EOD;
 
             $response = Http::withToken(config('services.openai.key'))
                 ->post('https://api.openai.com/v1/chat/completions', [
@@ -166,7 +166,26 @@ EOD;
             $this->fakenessScore = $score;
 
             // 5. Fetch explanation from OpenAI
-            $explanation = $this->fetchExplanation($this->url, $score, $title, $description);
+            $prompt = <<<EOD
+                Based on the following news article metadata and URL, give me a brief explanation about this news article and why it is considered fake news. If it's not considered fake, then show why it's not fake. (around 500 words)
+
+                URL: {$this->url}
+                Title: {$this->ogTitle}
+                Description: {$this->ogDescription}
+                EOD;
+
+            $response = Http::withToken(config('services.openai.key'))
+                ->post('https://api.openai.com/v1/chat/completions', [
+                    'model' => 'gpt-4o-mini',
+                    'messages' => [
+                        ['role' => 'user', 'content' => $prompt],
+                    ],
+                    'max_tokens' => 1000,
+                ]);
+
+            $answer = $response->json('choices.0.message.content') ?? '';
+
+            $explanation = $answer;
 
             $this->explanation = $explanation;
 
@@ -191,10 +210,10 @@ EOD;
 
             // $this->refreshHistory();
             $this->url = '';
-             $this->dispatch('fakeness-check-complete');
+            $this->dispatch('fakeness-check-complete');
 
             // $this->dispatch('fakeness-check-complete'); // Changed event name for clarity
-            
+
             // Dispatch browser event after a successful check and data saving
             // $this->dispatchBrowserEvent('fakeness-check-complete');
 
@@ -216,16 +235,16 @@ EOD;
         $timestamp = now()->format('YmdHis');
         return Str::slug($title) . '-' . $timestamp;
     }
-    
-      // delete function
-     public function deleteARC($id)
+
+    // delete function
+    public function deleteARC($id)
     {
         $delete = FakenessCheck::findOrFail($id);
         $delete->delete();
         session()->flash('message', 'Article deleted successfully.');
     }
 
-   
+
 
     public function render()
     {
@@ -236,20 +255,11 @@ EOD;
             // 'recentArticles' => $this->getRecentArticles()
         ]);
     }
-    
-    public function rendered()
-    {
-       
 
-    }
+    public function rendered() {}
 
     public function resetFakenessScore()
     {
         $this->reset(['fakenessScore', 'error', 'explanation', 'ogTitle', 'ogImage', 'ogDescription']);
     }
-
-
-  
-
-    
 }

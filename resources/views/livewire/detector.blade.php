@@ -55,10 +55,10 @@
                     </div>
 
                     <div class="mb-6">
-                        <div class="bg-gray-50 text-gray-500 text-center border border-gray-200 rounded-xl p-5 cf-turnstile flex items-center justify-center"
+                        {{-- <div class="bg-gray-50 text-gray-500 text-center border border-gray-200 rounded-xl p-5 cf-turnstile flex items-center justify-center"
                             data-sitekey="{{ config('services.turnstile.key') }}" data-theme="{{ $theme ?? 'light' }}">
-                            {{-- <p class="text-sm">Please complete the captcha</p> --}}
-                        </div>
+                            <p class="text-sm">Please complete the captcha</p>
+                        </div> --}}
                     </div>
 
                     <button type="submit"
@@ -120,12 +120,12 @@
                 <div class="mt-20 w-full max-w-5xl mx-auto animate-fade-in-up">
                     <h2 class="text-3xl font-extrabold text-gray-800 mb-8 text-center">Previously Analyzed Articles</h2>
                     <div class="mb-6 flex justify-center">
-                        <select wire:model.live="perPage"
+                        {{-- <select wire:model.live="perPage"
                             class="border border-gray-300 rounded-lg p-2 text-gray-700 shadow-sm focus:ring-blue-400 focus:border-blue-400">
                             <option value="6">Show 6 per page</option>
                             <option value="9">Show 9 per page</option>
                             <option value="12">Show 12 per page</option>
-                        </select>
+                        </select> --}}
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 ">
@@ -134,7 +134,7 @@
                                 class="bg-white rounded-2xl shadow-lg p-6 flex flex-col transform transition-transform duration-300 hover:-translate-y-2 hover:shadow-xl     @if ($fakenessScore !== null && $fakenessScore >= 70) shadow-red-500/50 hover:shadow-red-500
     @else
         hover:shadow-xl @endif">
-                                <div class="relative self-end" x-data="{ open: false }" @click.away="open = false">
+                                {{-- <div class="relative self-end" x-data="{ open: false }" @click.away="open = false">
                                     <button @click="open = !open"
                                         class="text-gray-500 hover:text-gray-700 p-2 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-300">
                                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
@@ -146,7 +146,7 @@
                                     </button>
 
 
-                                    <div x-show="open" x-transition:enter="transition ease-out duration-100"
+                                    {{-- <div x-show="open" x-transition:enter="transition ease-out duration-100"
                                         x-transition:enter-start="transform opacity-0 scale-95"
                                         x-transition:enter-end="transform opacity-100 scale-100"
                                         x-transition:leave="transition ease-in duration-75"
@@ -158,7 +158,7 @@
                                             Delete
                                         </button>
                                     </div>
-                                </div>
+                                </div> --}}
                                 <img src="{{ $article->image }}" alt="Thumbnail"
                                     class="w-full h-48 object-cover rounded-xl mb-4 shadow-sm border border-gray-100">
                                 <h3 class="text-xl font-bold text-gray-800 mb-2 truncate"
