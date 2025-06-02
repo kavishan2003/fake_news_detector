@@ -49,10 +49,10 @@
                 <form action="/checkFakeness" method="post">
                     @if (session('alert'))
                         <div id="alert-message"
-                            class="bg-gray-200 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4 rounded-md flex justify-between items-center">
+                            class="bg-gray-200 border-l-4 border-red-200 text-red-500 p-4 mb-4 rounded-md flex justify-between items-center">
                             <div>{{ session('alert') }}</div>
                             <button type="button"
-                                class="ml-4 text-yellow-700 hover:text-yellow-900 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-opacity-50"
+                                class="ml-4 text-red-700 hover:text-red-900 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-opacity-50"
                                 onclick="document.getElementById('alert-message').style.display='none'">
                                 <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none"
                                     viewBox="0 0 24 24" stroke="currentColor">
@@ -103,18 +103,7 @@
 
 
                 @if ($fakenessScore !== null)
-                    <div id="alert-message"
-                        class="bg-gray-200 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4 rounded-md items-center">
-                        <div>{{ session('alert') }}</div>
-                        <button type="button"
-                            class="ml-4 text-yellow-700 hover:text-yellow-900 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-opacity-50"
-                            onclick="document.getElementById('alert-message').style.display='none'">
-                            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
+                    <div id="fakeness-bar">
                         <div class="mt-8 text-center bg-gray-50 p-6 rounded-xl shadow-inner animate-fade-in">
                             <p class="text-2xl font-bold text-gray-800 mb-3">Fakeness Score: <strong
                                     class="text-blue-600">{{ $fakenessScore }}%</strong></p>
@@ -149,7 +138,10 @@
             {{-- @php
                 dd($fakenessScore);
             @endphp --}}
-            @if ($history)
+            @if ($history->count() > 0)
+                {{-- @php
+                    dd($history)
+                @endphp --}}
                 <div class="mt-20 w-full max-w-5xl mx-auto animate-fade-in-up">
                     <h2 class="text-3xl font-extrabold text-gray-800 mb-8 text-center">Previously Analyzed Articles</h2>
                     <div class="mb-6 flex justify-center">
@@ -167,9 +159,7 @@
                                $score = $article->score;
                             @endphp --}}
                             <div
-                                class="bg-white rounded-2xl shadow-lg p-6 flex flex-col transform transition-transform duration-300 hover:-translate-y-2 hover:shadow-xl     @if ($fakenessScore !== null && $fakenessScore >= 70) shadow-red-500/50 hover:shadow-red-500
-    @else
-        hover:shadow-xl @endif">
+                                class="bg-white rounded-2xl shadow-lg p-6 flex flex-col transform transition-transform duration-300 hover:-translate-y-2 hover:shadow-xl">
 
                                 <img src="{{ $article->image }}" alt="Thumbnail"
                                     class="w-full h-48 object-cover rounded-xl mb-4 shadow-sm border border-gray-100">
@@ -195,7 +185,7 @@
                         @endforeach
                     </div>
 
-                    @if (method_exists($history, 'links'))
+                    @if (method_exists($history, 'links') && $history->total() > $history->perPage())
                         <div class="mt-8 flex justify-center">
                             <div class="bg-white p-4 rounded-lg shadow-md">
                                 {{ $history->links('pagination::tailwind') }}
@@ -203,6 +193,19 @@
                         </div>
                     @endif
                 </div>
+            @else
+                <div
+                    class="flex flex-col items-center justify-center text-center text-gray-500 mt-20 w-full max-w-5xl mx-auto animate-fade-in-up">
+                    <h3 class="text-xl font-bold mb-2">No Articles Found</h3>
+                    <p class="text-md text-gray-600">You haven't analyzed any articles yet. Start by pasting a URL
+                        above!</p>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-32 w-32 mb-6 text-gray-400" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                            d="M9 13h6m2 9H7a2 2 0 01-2-2V7h14v13a2 2 0 01-2 2zM10 3h4a1 1 0 011 1v1H9V4a1 1 0 011-1z" />
+                    </svg>
+                </div>
+
             @endif
 
         </main>
@@ -230,6 +233,32 @@
             </svg>
             <span class="ml-2">Analyzing...</span>
         `;
-        });
+        });,
     </script>
 @endscript
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const alertBox = document.getElementById("fakeness-bar");
+        if (alertBox) {
+            setTimeout(() => {
+                alertBox.classList.add("opacity-0", "transition-opacity", "duration-1000");
+                setTimeout(() => {
+                    alertBox.style.display = "none";
+                }, 1000); // wait for fade-out transition to finish
+            }, 8000);
+        }
+    });
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const alertBox = document.getElementById("alert-message");
+        if (alertBox) {
+            setTimeout(() => {
+                alertBox.classList.add("opacity-0", "transition-opacity", "duration-700");
+                setTimeout(() => {
+                    alertBox.style.display = "none";
+                }, 700); // wait for the fade-out transition
+            }, 4000); // 5 seconds delay
+        }
+    });
+</script>
