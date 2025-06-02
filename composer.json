@@ -17,6 +17,7 @@
         "livewire/livewire": "^3.6",
         "nilgems/laravel-textract": "^12.0",
         "ryangjchandler/laravel-cloudflare-turnstile": "^2.0",
+        "sweetalert2/laravel": "*",
         "symfony/css-selector": "^7.2",
         "symfony/dom-crawler": "^7.2"
     },

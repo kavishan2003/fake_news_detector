@@ -1,3 +1,7 @@
+@section('head')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+@endsection
+
 <div>
 
     <nav class="bg-white shadow-lg py-4 fixed w-full top-0 z-50">
@@ -16,12 +20,12 @@
                             Home
                         </a>
                     </li>
-                    <li>
+                    {{-- <li>
                         <a wire:navigate href="{{ route('analytics') }}"
                             class="text-gray-700 hover:text-blue-600 font-semibold text-lg transition-colors duration-200">
                             Analytics
                         </a>
-                    </li>
+                    </li> --}}
                 </ul>
             </div>
         </div>
@@ -30,19 +34,43 @@
         class="container mx-auto px-4 py-20 min-h-screen flex flex-col lg:flex-row items-center lg:items-start justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
 
 
-       
-
-
         {{-- Main Content --}}
         <main class="flex-1 overflow-y-auto p-4 lg:p-0 mt-2">
             <div class="text-center mb-12 animate-fade-in-down">
                 <h1 class="text-5xl font-extrabold text-gray-800 tracking-tight"></h1>
-                <p class="text-gray-600 mt-3 text-lg">Uncover the truth behind the headlines</p>
+                <p class="text-gray-600 mt-3 text-2xl">Discover if a news article is fake or real. Paste the article URL
+                    below to check!</p>
             </div>
+
+
 
             <div
                 class="max-w-2xl w-full mx-auto bg-white p-8 rounded-2xl shadow-xl transform transition-all duration-300 hover:scale-105">
-                <form wire:submit.prevent="checkFakeness">
+                <form action="/checkFakeness" method="post">
+                    @if (session('alert'))
+                        <div id="alert-message"
+                            class="bg-gray-200 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4 rounded-md flex justify-between items-center">
+                            <div>{{ session('alert') }}</div>
+                            <button type="button"
+                                class="ml-4 text-yellow-700 hover:text-yellow-900 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-opacity-50"
+                                onclick="document.getElementById('alert-message').style.display='none'">
+                                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                    @endif
+
+                    {{-- @if (session('alert'))
+                        <script>
+                            Swal.fire("SweetAlert2 is working!");
+                        </script>
+                    @endif --}}
+
+
+
                     @csrf
                     <div class="mb-6">
                         <label for="url" class="block text-sm font-semibold text-gray-700 mb-2">Article URL</label>
@@ -62,60 +90,65 @@
                     </div>
 
                     <button type="submit"
-                        class="w-full bg-blue-700 text-white font-bold py-4 rounded-xl hover:bg-blue-800 transition-all duration-300 transform hover:-translate-y-1 shadow-lg hover:shadow-xl flex items-center justify-center">
-                        <svg wire:loading.remove wire:target="checkFakeness" class="w-5 h-5 mr-2" fill="none"
-                            stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        class="w-full bg-blue-700 text-white font-bold py-4 rounded-xl hover:bg-blue-800 transition-all duration-300 transform hover:-translate-y-1 shadow-lg hover:shadow-xl flex items-center justify-center"
+                        id="submitBtn">
+                        <svg id="checkIcon" class="w-5 h-5 mr-2" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
-                        <span wire:loading.remove wire:target="checkFakeness">Check Authenticity</span>
-                        <span wire:loading wire:target="checkFakeness">
-                            <svg class="animate-spin mx-auto h-5 w-5 text-white flex items-center text-center"
-                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                                    stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor"
-                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                </path>
-                            </svg>
-                            Analyzing...
-                        </span>
+                        <span id="btnText">Check Authenticity</span>
                     </button>
                 </form>
 
+
                 @if ($fakenessScore !== null)
-                    <div class="mt-8 text-center bg-gray-50 p-6 rounded-xl shadow-inner animate-fade-in">
-                        <p class="text-2xl font-bold text-gray-800 mb-3">Fakeness Score: <strong
-                                class="text-blue-600">{{ $fakenessScore }}%</strong></p>
-                        @php
-                            $barColor = 'bg-green-500'; // green
-                            $textColor = 'text-green-700';
-                            $message = 'Looks credible!';
-                            if ($fakenessScore >= 70) {
-                                $barColor = 'bg-red-500'; // red
-                                $textColor = 'text-red-700';
-                                $message = 'High likelihood of being fake news!';
-                            } elseif ($fakenessScore >= 30) {
-                                $barColor = 'bg-yellow-500'; // yellow
-                                $textColor = 'text-yellow-700';
-                                $message = 'Exercise caution, it might be misleading.';
-                            }
-                        @endphp
-                        <div class="w-full h-5 mt-4 bg-gray-200 rounded-full overflow-hidden shadow-md">
-                            <div class="h-full rounded-full transition-all duration-700 ease-out {{ $barColor }}"
-                                style="width: {{ $fakenessScore }}%;"></div>
+                    <div id="alert-message"
+                        class="bg-gray-200 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4 rounded-md items-center">
+                        <div>{{ session('alert') }}</div>
+                        <button type="button"
+                            class="ml-4 text-yellow-700 hover:text-yellow-900 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-opacity-50"
+                            onclick="document.getElementById('alert-message').style.display='none'">
+                            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                        <div class="mt-8 text-center bg-gray-50 p-6 rounded-xl shadow-inner animate-fade-in">
+                            <p class="text-2xl font-bold text-gray-800 mb-3">Fakeness Score: <strong
+                                    class="text-blue-600">{{ $fakenessScore }}%</strong></p>
+                            @php
+                                $barColor = 'bg-green-500'; // green
+                                $textColor = 'text-green-700';
+                                $message = 'Looks credible!';
+                                if ($fakenessScore >= 70) {
+                                    $barColor = 'bg-red-500'; // red
+                                    $textColor = 'text-red-700';
+                                    $message = 'High likelihood of being fake news!';
+                                } elseif ($fakenessScore >= 30) {
+                                    $barColor = 'bg-yellow-500'; // yellow
+                                    $textColor = 'text-yellow-700';
+                                    $message = 'Exercise caution, it might be misleading.';
+                                }
+                            @endphp
+                            <div class="w-full h-5 mt-4 bg-gray-200 rounded-full overflow-hidden shadow-md">
+                                <div class="h-full rounded-full transition-all duration-700 ease-out {{ $barColor }}"
+                                    style="width: {{ $fakenessScore }}%;"></div>
+                            </div>
+
+                            <p class="mt-4 text-lg font-semibold {{ $textColor }}">{{ $message }}</p>
                         </div>
-                        <p class="mt-4 text-lg font-semibold {{ $textColor }}">{{ $message }}</p>
+
+
                     </div>
                 @endif
             </div>
 
-            @if (session()->has('message'))
-                <div class="bg-red-100 text-green-800 p-3 rounded mb-4 text-end">
-                    {{ session('message') }}
-                </div>
-            @endif
 
+            {{-- @php
+                dd($fakenessScore);
+            @endphp --}}
             @if ($history)
                 <div class="mt-20 w-full max-w-5xl mx-auto animate-fade-in-up">
                     <h2 class="text-3xl font-extrabold text-gray-800 mb-8 text-center">Previously Analyzed Articles</h2>
@@ -130,35 +163,14 @@
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 ">
                         @foreach ($history as $article)
+                            {{-- @php
+                               $score = $article->score;
+                            @endphp --}}
                             <div
                                 class="bg-white rounded-2xl shadow-lg p-6 flex flex-col transform transition-transform duration-300 hover:-translate-y-2 hover:shadow-xl     @if ($fakenessScore !== null && $fakenessScore >= 70) shadow-red-500/50 hover:shadow-red-500
     @else
         hover:shadow-xl @endif">
-                                {{-- <div class="relative self-end" x-data="{ open: false }" @click.away="open = false">
-                                    <button @click="open = !open"
-                                        class="text-gray-500 hover:text-gray-700 p-2 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-300">
-                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                            xmlns="http://www.w3.org/2000/svg">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z">
-                                            </path>
-                                        </svg>
-                                    </button>
 
-
-                                    {{-- <div x-show="open" x-transition:enter="transition ease-out duration-100"
-                                        x-transition:enter-start="transform opacity-0 scale-95"
-                                        x-transition:enter-end="transform opacity-100 scale-100"
-                                        x-transition:leave="transition ease-in duration-75"
-                                        x-transition:leave-start="transform opacity-100 scale-100"
-                                        x-transition:leave-end="transform opacity-0 scale-95"
-                                        class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg py-1 z-10 origin-top-right">
-                                        <button wire:click="deleteARC({{ $article->id }})"
-                                            class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 hover:text-red-700">
-                                            Delete
-                                        </button>
-                                    </div>
-                                </div> --}}
                                 <img src="{{ $article->image }}" alt="Thumbnail"
                                     class="w-full h-48 object-cover rounded-xl mb-4 shadow-sm border border-gray-100">
                                 <h3 class="text-xl font-bold text-gray-800 mb-2 truncate"
@@ -199,11 +211,25 @@
 
 @script
     <script>
-        Livewire.on('fakeness-check-complete', () => {
-            console.log('Fakeness check completed. UI will update.');
-            setTimeout(() => {
-                window.location.reload(); // Reloads the entire page
-            }, 6000); // 8000 milliseconds = 8 seconds
+        // Livewire.on('fakeness-check-complete', () => {
+        //     console.log('Fakeness check completed. UI will update.');
+        //     setTimeout(() => {
+        //         window.location.reload(); // Reloads the entire page
+        //     }, 6000); // 8000 milliseconds = 8 seconds
+        // });
+        // button
+
+        document.getElementById('submitBtn').addEventListener('click', function() {
+            document.getElementById('checkIcon').style.display = 'none';
+            document.getElementById('btnText').innerHTML = `
+            <svg class="animate-spin mx-auto h-5 w-5 text-white flex items-center text-center"
+                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span class="ml-2">Analyzing...</span>
+        `;
         });
     </script>
 @endscript

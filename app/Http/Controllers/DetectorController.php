@@ -1,26 +1,25 @@
 <?php
 
-namespace App\Livewire;
+namespace App\Http\Controllers;
 
 use GuzzleHttp\Client;
 use Livewire\Component;
 use Illuminate\Log\Logger;
 use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 use Livewire\WithPagination;
 use App\Models\FakenessCheck;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Redirect;
 use Symfony\Component\DomCrawler\Crawler;
 
-class Detector extends Component
+class DetectorController extends Controller
 {
-    use WithPagination;
-    protected $paginationTheme = 'tailwind';
-
     public string $url = '';
     public ?int $fakenessScore = null;
     public string $error = '';
-  
+
     public $perPage = 12;
     public ?string $ogTitle = null;
     public ?string $ogImage = null;
@@ -28,11 +27,10 @@ class Detector extends Component
     public $ogDescription;
     public $Title;
 
-    protected $listeners = ['resetFakenessScore'];
-
     public function fetchOGMeta($url)
     {
         try {
+
             $client = new Client();
             $response = $client->get($url);
             $html = $response->getBody()->getContents();
@@ -57,7 +55,7 @@ class Detector extends Component
                 'description' => $ogDescription
             ];
         } catch (\Exception $e) {
-            
+
             return [
                 'title' => null,
                 'image' => asset('images/newspaper.jpg'),
@@ -66,62 +64,30 @@ class Detector extends Component
         }
     }
 
-    public function fetchExplanation($url, $score, $Title, $ogDescription)
+    public function checkFakeness(Request $request)
     {
-        $prompt = "Explain in up to 500 words why the article at this URL is " . ($score < 50 ? 'fake' : 'real') . ": $url. Consider the title: '{$Title}' and description: '{$ogDescription}'.";
 
-        try {
-            $response = Http::withToken(env('OPENAI_API_KEY'))->post('https://api.openai.com/v1/chat/completions', [
-                'model' => 'gpt-4o-mini',
-                'messages' => [
-                    ['role' => 'system', 'content' => 'You are a fact-checking assistant. Provide concise and clear explanations.'],
-                    ['role' => 'user', 'content' => $prompt]
-                ],
-                'max_tokens' => 1000,
-            ]);
+        $userUrl = $request->input('url');
 
-            // Check for API errors or empty responses
-            if ($response->successful()) {
-                return $response->json('choices.0.message.content') ?? 'No explanation provided.';
-            } else {
-                // \Log::error("OpenAI API error for explanation: " . $response->body());
-                return 'Failed to get an explanation from the AI service.';
-            }
-        } catch (\Exception $e) {
-            // \Log::error("Exception when fetching explanation from OpenAI: " . $e->getMessage());
-            return 'An error occurred while generating the explanation.';
-        }
-    }
-
-    public function checkFakeness()
-    {
-        $this->reset(['fakenessScore', 'error', 'explanation', 'ogTitle', 'ogImage', 'ogDescription']);
         $this->fakenessScore = null;
 
-   
 
+        if (!filter_var($userUrl, FILTER_VALIDATE_URL)) {
 
-        if (!filter_var($this->url, FILTER_VALIDATE_URL)) {
-            $this->addError('url', 'Please enter a valid URL.');
             return;
         }
 
-        $cacheKey = 'fakeness_score_' . md5($this->url);
+        $cacheKey = 'fakeness_score_' . md5($userUrl);
 
         if (Cache::has($cacheKey)) {
-            $cachedData = Cache::get($cacheKey);
-            $this->fakenessScore = $cachedData['score'];
-            $this->ogTitle = $cachedData['title'];
-            $this->ogImage = $cachedData['image'];
-            $this->explanation = $cachedData['explanation'];
-            $this->ogDescription = $cachedData['description'];
-     
-            return;
+            
+            return redirect()->back()->with('alert', 'This URL has already been checked before.');
         }
+
 
         try {
             // 1. Fetch OG metadata first
-            $ogData = $this->fetchOGMeta($this->url);
+            $ogData = $this->fetchOGMeta($userUrl);
             $title = $ogData['title'] ?? 'Unknown Article'; // fallback
             $image = $ogData['image'] ?? asset('images/newspaper.jpg');
             $description = $ogData['description'] ?? null;
@@ -143,14 +109,14 @@ class Detector extends Component
 
             // 4. Prepare prompt and call OpenAI for fakeness score
             $prompt = <<<EOD
-                Based on the following news article metadata and URL, determine how fake this news article is.
-                Give me a percentage score from 0 to 100%, where 100% is completely fake and 0% is completely true and factual.
-                Just give me a percentage number only, no other text at all. Respond with only a number and no text.
-
-                URL: {$this->url}
-                Title: {$this->ogTitle}
-                Description: {$this->ogDescription}
-                EOD;
+            Based on the following news article metadata and URL, determine how fake this news article is.
+            Give me a percentage score from 0 to 100%, where 100% is completely fake and 0% is completely true and factual.
+            Just give me a percentage number only, no other text at all. Respond with only a number and no text.
+            
+            URL: {$userUrl}
+            Title: {$this->ogTitle}
+            Description: {$this->ogDescription}
+            EOD;
 
             $response = Http::withToken(config('services.openai.key'))
                 ->post('https://api.openai.com/v1/chat/completions', [
@@ -164,11 +130,10 @@ class Detector extends Component
             $answer = $response->json('choices.0.message.content') ?? '';
             preg_match('/\d{1,3}/', $answer, $matches);
             $score = isset($matches[0]) ? min((int)$matches[0], 100) : null;
-            // $score = 80;
+
 
             if ($score === null) {
                 $this->error = 'Unable to extract a score from the AI response. Raw response: ' . $answer;
-                // \Log::warning("AI did not return a score for URL: {$this->url}. Raw response: {$answer}");
                 return;
             }
 
@@ -176,13 +141,13 @@ class Detector extends Component
 
             // 5. Fetch explanation from OpenAI
             $prompt = <<<EOD
-                Based on the following news article metadata and URL, give me a brief explanation about this news article and why it is considered fake news.
-                 If it's not considered fake, then show why it's not fake. (around 500 words)
-
-                URL: {$this->url}
-                Title: {$this->ogTitle}
-                Description: {$this->ogDescription}
-                EOD;
+            Based on the following news article metadata and URL, give me a brief explanation about this news article and why it is considered fake news.
+            If it's not considered fake, then show why it's not fake. (around 500 words)
+            
+            URL: {$userUrl}
+            Title: {$this->ogTitle}
+            Description: {$this->ogDescription}
+            EOD;
 
             $response = Http::withToken(config('services.openai.key'))
                 ->post('https://api.openai.com/v1/chat/completions', [
@@ -199,6 +164,7 @@ class Detector extends Component
 
             $this->explanation = $explanation;
 
+            // dump($score);
             // Cache the score and other relevant data for 24 hours
             Cache::put($cacheKey, [
                 'score' => $score,
@@ -210,7 +176,7 @@ class Detector extends Component
 
             // 6. Save all data to DB
             FakenessCheck::create([
-                'url' => $this->url,
+                'url' => $userUrl,
                 'score' => $score,
                 'title' => $title,
                 'image' => $image,
@@ -218,55 +184,13 @@ class Detector extends Component
                 'slug' => $slug,
             ]);
 
- 
-            $this->url = '';
-            $this->dispatch('fakeness-check-complete');
 
-            
-
+            return view('welcome', [
+                'fakenessScore' => $score,
+              
+            ]);
         } catch (\Exception $e) {
             $this->error = 'Failed to process check: ' . $e->getMessage();
-         
         }
-    }
-
-    public function mount()
-    {
-      
-    }
-
-
-
-    public static function generateSlug($title)
-    {
-        $timestamp = now()->format('YmdHis');
-        return Str::slug($title) . '-' . $timestamp;
-    }
-
-    // delete function
-    public function deleteARC($id)
-    {
-        $delete = FakenessCheck::findOrFail($id);
-        $delete->delete();
-        session()->flash('message', 'Article deleted successfully.');
-    }
-
-
-
-    public function render()
-    {
-       
-        return view('livewire.detector', [
-           
-            'history' => FakenessCheck::latest()->paginate($this->perPage),
-           
-        ]);
-    }
-
-        public function rendered() {}
-
-    public function resetFakenessScore()
-    {
-        $this->reset(['fakenessScore', 'error', 'explanation', 'ogTitle', 'ogImage', 'ogDescription']);
     }
 }
