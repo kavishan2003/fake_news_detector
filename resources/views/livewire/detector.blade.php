@@ -1,17 +1,15 @@
-@section('head')
+{{-- @section('head')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-@endsection
+@endsection --}}
 
 <div>
 
-    <nav class="bg-white shadow-lg py-4 fixed w-full top-0 z-50">
+    {{-- <nav class="bg-white shadow-lg py-4 fixed w-full top-0 z-50">
         <div class="container mx-auto px-4 flex justify-between items-center">
             {{-- Logo/Brand (Optional) --}}
-            <a href="#" class="text-2xl font-bold text-blue-700 hover:text-blue-800 transition-colors duration-200">
-                Fake News Detector
-            </a>
 
-            {{-- Navigation Links --}}
+
+            {{-- Navigation Links
             <div>
                 <ul class="flex space-x-8">
                     <li>
@@ -20,25 +18,25 @@
                             Home
                         </a>
                     </li>
-                    {{-- <li>
+                    <li>
                         <a wire:navigate href="{{ route('analytics') }}"
                             class="text-gray-700 hover:text-blue-600 font-semibold text-lg transition-colors duration-200">
                             Analytics
                         </a>
-                    </li> --}}
+                    </li>
                 </ul>
             </div>
         </div>
-    </nav>
+    </nav> --}}
     <div
-        class="container mx-auto px-4 py-20 min-h-screen flex flex-col lg:flex-row items-center lg:items-start justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
+        class="container mx-auto px-4 py-10 min-h-screen flex flex-col lg:flex-row items-center lg:items-start justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
 
 
         {{-- Main Content --}}
-        <main class="flex-1 overflow-y-auto p-4 lg:p-0 mt-2">
+        <main class="flex-1 overflow-y-auto p-4 lg:p-0 ">
             <div class="text-center mb-12 animate-fade-in-down">
-                <h1 class="text-5xl font-extrabold text-gray-800 tracking-tight"></h1>
-                <p class="text-gray-600 mt-3 text-2xl">Discover if a news article is fake or real. Paste the article URL
+                <h1 class="text-5xl font-extrabold text-blue-700  tracking-tight">Fake News Detector</h1>
+                <p class="text-gray-600 mt-5 text-2xl">Discover if a news article is fake or real. Paste the article URL
                     below to check!</p>
             </div>
 

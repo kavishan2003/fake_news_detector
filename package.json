@@ -15,7 +15,7 @@
     },
     "dependencies": {
         "alpinejs": "^3.14.9",
-        "openai": "^4.98.0",
+        "openai": "^4.104.0",
         "sweetalert2": "^11.22.0"
     }
 }

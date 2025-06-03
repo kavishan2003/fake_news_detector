@@ -80,7 +80,7 @@ class DetectorController extends Controller
         $cacheKey = 'fakeness_score_' . md5($userUrl);
 
         if (Cache::has($cacheKey)) {
-            
+
             return redirect()->back()->with('alert', 'This URL has already been checked before.');
         }
 
@@ -119,13 +119,14 @@ class DetectorController extends Controller
             EOD;
 
             $response = Http::withToken(config('services.openai.key'))
-                ->post('https://api.openai.com/v1/chat/completions', [
-                    'model' => 'gpt-4o-mini',
+                ->post('https://api.deepseek.com', [
+                    'model' => 'deepseek-chat',
                     'messages' => [
                         ['role' => 'user', 'content' => $prompt],
                     ],
                     'max_tokens' => 10,
                 ]);
+            Logger($response);
 
             $answer = $response->json('choices.0.message.content') ?? '';
             preg_match('/\d{1,3}/', $answer, $matches);
@@ -134,7 +135,7 @@ class DetectorController extends Controller
 
             if ($score === null) {
                 $this->error = 'Unable to extract a score from the AI response. Raw response: ' . $answer;
-                return;
+                return 1;
             }
 
             $this->fakenessScore = $score;
@@ -149,13 +150,21 @@ class DetectorController extends Controller
             Description: {$this->ogDescription}
             EOD;
 
+            // $response = Http::withToken(config('services.openai.key'))
+            //     ->post('https://api.openai.com/v1/chat/completions', [
+            //         'model' => 'gpt-4o-mini',
+            //         'messages' => [
+            //             ['role' => 'user', 'content' => $prompt],
+            //         ],
+            //         'max_tokens' => 1000,
+            //     ]);
             $response = Http::withToken(config('services.openai.key'))
-                ->post('https://api.openai.com/v1/chat/completions', [
-                    'model' => 'gpt-4o-mini',
+                ->post('https://api.deepseek.com', [
+                    'model' => 'deepseek-chat',
                     'messages' => [
                         ['role' => 'user', 'content' => $prompt],
                     ],
-                    'max_tokens' => 1000,
+                    'max_tokens' => 10,
                 ]);
 
             $answer = $response->json('choices.0.message.content') ?? '';
@@ -187,7 +196,7 @@ class DetectorController extends Controller
 
             return view('welcome', [
                 'fakenessScore' => $score,
-              
+
             ]);
         } catch (\Exception $e) {
             $this->error = 'Failed to process check: ' . $e->getMessage();

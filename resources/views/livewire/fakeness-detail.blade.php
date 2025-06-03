@@ -8,7 +8,10 @@
         </a>
     </p>
 
-    <p class="text-lg font-semibold mb-4">Fakeness Score: {{ $article->score }}%</p>
+    <p class="text-lg font-semibold mb-4">Fakeness Score: <span class="text-md font-semibold text-gray-700">
+            <span
+                class="font-extrabold text-lg {{ $article->score >= 70 ? 'text-red-600' : ($article->score >= 30 ? 'text-yellow-600' : 'text-green-600') }}">{{ $article->score }}%</span></span>
+    </p>
 
     <h2 class="text-xl font-bold mb-2">Explanation</h2>
     <p class="text-gray-800 mb-6">{{ $article->explanation }}</p>
