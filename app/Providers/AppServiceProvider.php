@@ -25,7 +25,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         RateLimiter::for('daily-ip-limit', function (Request $request) {
-            return Limit::perDay(100)->by($request->ip());
+            return Limit::perDay(5)->by($request->ip());
         });
         if(app()->environment("production")) {
             URL::forceScheme("https");
