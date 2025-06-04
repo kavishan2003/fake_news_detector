@@ -1,33 +1,5 @@
-{{-- @section('head')
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-@endsection --}}
-
 <div>
 
-    {{-- <nav class="bg-white shadow-lg py-4 fixed w-full top-0 z-50">
-        <div class="container mx-auto px-4 flex justify-between items-center">
-            {{-- Logo/Brand (Optional) --}}
-
-
-    {{-- Navigation Links
-            <div>
-                <ul class="flex space-x-8">
-                    <li>
-                        <a href="/"
-                            class="text-gray-700 hover:text-blue-600 font-semibold text-lg transition-colors duration-200">
-                            Home
-                        </a>
-                    </li>
-                    <li>
-                        <a wire:navigate href="{{ route('analytics') }}"
-                            class="text-gray-700 hover:text-blue-600 font-semibold text-lg transition-colors duration-200">
-                            Analytics
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav> --}}
     <div
         class="container mx-auto px-4 py-10 min-h-screen flex flex-col lg:flex-row items-center lg:items-start justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
 
@@ -60,12 +32,6 @@
                             </button>
                         </div>
                     @endif
-
-                    {{-- @if (session('alert'))
-                        <script>
-                            Swal.fire("SweetAlert2 is working!");
-                        </script>
-                    @endif --}}
 
 
 
@@ -133,29 +99,15 @@
             </div>
 
 
-            {{-- @php
-                dd($fakenessScore);
-            @endphp --}}
+
             @if ($history->count() > 0)
-                {{-- @php
-                    dd($history)
-                @endphp --}}
+
                 <div class="mt-20 w-full max-w-5xl mx-auto animate-fade-in-up">
                     <h2 class="text-3xl font-extrabold text-gray-800 mb-8 text-center">Previously Analyzed Articles</h2>
-                    <div class="mb-6 flex justify-center">
-                        {{-- <select wire:model.live="perPage"
-                            class="border border-gray-300 rounded-lg p-2 text-gray-700 shadow-sm focus:ring-blue-400 focus:border-blue-400">
-                            <option value="6">Show 6 per page</option>
-                            <option value="9">Show 9 per page</option>
-                            <option value="12">Show 12 per page</option>
-                        </select> --}}
-                    </div>
+
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 ">
                         @foreach ($history as $article)
-                            {{-- @php
-                               $score = $article->score;
-                            @endphp --}}
                             <div
                                 class="bg-white rounded-2xl shadow-lg p-6 flex flex-col transform transition-transform duration-300 hover:-translate-y-2 hover:shadow-xl">
 
@@ -231,7 +183,7 @@
             </svg>
             <span class="ml-2">Analyzing...</span>
         `;
-        });,
+        });
     </script>
 @endscript
 <script>
