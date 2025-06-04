@@ -26,6 +26,7 @@ class DetectorController extends Controller
     public $ogDescription;
     public $Title;
     public $ogLogo;
+    public $ogName;
 
 
 
@@ -74,11 +75,35 @@ class DetectorController extends Controller
             }
 
 
+            //extract site name
+
+            $siteName = null;
+
+            if ($crawler->filterXPath("//meta[@property='og:site_name']")->count()) {
+                $siteName = $crawler->filterXPath("//meta[@property='og:site_name']")->attr('content');
+            }
+
+            if (!$siteName && $crawler->filter('title')->count()) {
+                $siteName = $crawler->filter('title')->text();
+                $siteName = preg_replace('/\|.*$| - .*$/', '', $siteName);
+                $siteName = trim($siteName);
+            }
+
+            if (!$siteName) {
+                $parsedUrl = parse_url($url);
+                $host = $parsedUrl['host'] ?? 'unknown';
+                $siteName = ucfirst(str_replace('www.', '', $host));
+            }
+
+            
+
+
             return [
                 'title' => $ogTitle,
                 'image' => $ogImage,
                 'description' => $ogDescription,
                 'logo' => $ogLogo ?? $favicon ?? null,
+                'name'=> $siteName,
             ];
         } catch (\Exception $e) {
 
@@ -118,12 +143,14 @@ class DetectorController extends Controller
             $image = $ogData['image'] ?? asset('images/newspaper.jpg');
             $description = $ogData['description'] ?? null;
             $Logo = $ogData['logo'] ?? asset('images/newspaper.jpg');
+            $Name = $ogData['name'] ??'No name';
 
 
             $this->ogTitle = $title;
             $this->ogImage = $image;
             $this->ogDescription = $description;
             $this->ogLogo = $Logo;
+            $this->ogName = $Name;
 
 
             // 2. Generate slug base and slug with timestamp
@@ -213,8 +240,9 @@ class DetectorController extends Controller
                 'image' => $image,
                 'explanation' => $explanation,
                 'slug' => $slug,
-                'logo' => $Logo
-                
+                'logo' => $Logo,
+                'name' => $Name,
+
             ]);
 
 

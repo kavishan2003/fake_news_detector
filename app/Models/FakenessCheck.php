@@ -13,7 +13,8 @@ class FakenessCheck extends Model
         'image',
         'explanation',
         'slug',
-        'logo'
+        'logo',
+        'name',
 
     ];
 }
