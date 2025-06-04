@@ -9,7 +9,7 @@
             {{-- Logo/Brand (Optional) --}}
 
 
-            {{-- Navigation Links
+    {{-- Navigation Links
             <div>
                 <ul class="flex space-x-8">
                     <li>
@@ -36,7 +36,7 @@
         <main class="flex-1 overflow-y-auto p-4 lg:p-0 ">
             <div class="text-center mb-12 animate-fade-in-down">
                 <h1 class="text-5xl font-extrabold text-blue-700  tracking-tight">Fake News Detector</h1>
-                <p class="text-gray-600 mt-5 text-2xl">Discover if a news article is fake or real. Paste the article URL
+                <p class="text-gray-600 mt-5 text-xl">Discover if a news article is fake or real. Paste the article URL
                     below to check!</p>
             </div>
 
@@ -159,16 +159,24 @@
                             <div
                                 class="bg-white rounded-2xl shadow-lg p-6 flex flex-col transform transition-transform duration-300 hover:-translate-y-2 hover:shadow-xl">
 
-                                <img src="{{ $article->image }}" alt="Thumbnail"
-                                    class="w-full h-48 object-cover rounded-xl mb-4 shadow-sm border border-gray-100">
+                                <div class="relative w-full h-48 mb-4">
+                                    <img src="{{ $article->image }}" alt="Thumbnail"
+                                        class="w-full h-full object-cover rounded-xl shadow-sm border border-gray-100">
+
+                                    @if (!empty($article->logo))
+                                        <img src="{{ $article->logo }}"
+                                            class="absolute bottom-2 right-2 w-13 h-13 object-contain bg-white rounded-full p-1 shadow-md "
+                                            alt="Logo">
+                                    @endif
+                                </div>
                                 <h3 class="text-xl font-bold text-gray-800 mb-2 truncate"
                                     title="{{ $article->title ?? 'No title available' }}">
                                     {{ $article->title ?? 'No title available' }}</h3>
-                                <p class="text-sm text-gray-600 mb-3 line-clamp-2">{{ $article->url }}</p>
                                 <div class="flex items-center justify-between mb-4">
                                     <span class="text-md font-semibold text-gray-700">Fake Score: <span
                                             class="font-extrabold text-lg {{ $article->score >= 70 ? 'text-red-600' : ($article->score >= 30 ? 'text-yellow-600' : 'text-green-600') }}">{{ $article->score }}%</span></span>
                                 </div>
+                                <p class="text-sm text-gray-600 mb-3 line-clamp-2">URL : {{ $article->url }}</p>
 
                                 <p class="text-sm text-gray-700 mb-4 line-clamp-3">
                                     {{ Str::limit($article->explanation, 150) }}</p>
@@ -197,7 +205,7 @@
                     <h3 class="text-xl font-bold mb-2">No Articles Found</h3>
                     <p class="text-md text-gray-600">You haven't analyzed any articles yet. Start by pasting a URL
                         above!</p>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-32 w-32 mb-6 text-gray-400" fill="none"
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20 mb-6 text-gray-400" fill="none"
                         viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                             d="M9 13h6m2 9H7a2 2 0 01-2-2V7h14v13a2 2 0 01-2 2zM10 3h4a1 1 0 011 1v1H9V4a1 1 0 011-1z" />
@@ -212,14 +220,6 @@
 
 @script
     <script>
-        // Livewire.on('fakeness-check-complete', () => {
-        //     console.log('Fakeness check completed. UI will update.');
-        //     setTimeout(() => {
-        //         window.location.reload(); // Reloads the entire page
-        //     }, 6000); // 8000 milliseconds = 8 seconds
-        // });
-        // button
-
         document.getElementById('submitBtn').addEventListener('click', function() {
             document.getElementById('checkIcon').style.display = 'none';
             document.getElementById('btnText').innerHTML = `

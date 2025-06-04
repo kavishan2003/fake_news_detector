@@ -9,10 +9,11 @@ class FakenessCheck extends Model
     protected $fillable = [
         'url',
         'score',
-        'title', 
+        'title',
         'image',
         'explanation',
-         'slug',
-        
+        'slug',
+        'logo'
+
     ];
 }

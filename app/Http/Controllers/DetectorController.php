@@ -19,13 +19,15 @@ class DetectorController extends Controller
     public string $url = '';
     public ?int $fakenessScore = null;
     public string $error = '';
-
     public $perPage = 12;
     public ?string $ogTitle = null;
     public ?string $ogImage = null;
     public ?string $explanation = null;
     public $ogDescription;
     public $Title;
+    public $ogLogo;
+
+
 
     public function fetchOGMeta($url)
     {
@@ -49,10 +51,34 @@ class DetectorController extends Controller
             if (!$ogTitle && $crawler->filter('title')->count()) {
                 $ogTitle = $crawler->filter('title')->text();
             }
+            // extractig the logo
+
+            $ogLogo = null;
+            $favicon = null;
+
+            if ($crawler->filterXPath("//meta[@property='og:logo']")->count()) {
+                $ogLogo = $crawler->filterXPath("//meta[@property='og:logo']")->attr('content');
+            } elseif ($crawler->filterXPath("//meta[@name='logo']")->count()) {
+                $ogLogo = $crawler->filterXPath("//meta[@name='logo']")->attr('content');
+            }
+
+            if ($crawler->filterXPath("//link[@rel='icon']")->count()) {
+                $favicon = $crawler->filterXPath("//link[@rel='icon']")->attr('href');
+            } elseif ($crawler->filterXPath("//link[@rel='shortcut icon']")->count()) {
+                $favicon = $crawler->filterXPath("//link[@rel='shortcut icon']")->attr('href');
+            }
+
+            $base = new \GuzzleHttp\Psr7\Uri($url);
+            if ($favicon) {
+                $favicon = \GuzzleHttp\Psr7\UriResolver::resolve($base, new \GuzzleHttp\Psr7\Uri($favicon))->__toString();
+            }
+
+
             return [
                 'title' => $ogTitle,
                 'image' => $ogImage,
-                'description' => $ogDescription
+                'description' => $ogDescription,
+                'logo' => $ogLogo ?? $favicon ?? null,
             ];
         } catch (\Exception $e) {
 
@@ -91,10 +117,14 @@ class DetectorController extends Controller
             $title = $ogData['title'] ?? 'Unknown Article'; // fallback
             $image = $ogData['image'] ?? asset('images/newspaper.jpg');
             $description = $ogData['description'] ?? null;
+            $Logo = $ogData['logo'] ?? asset('images/newspaper.jpg');
+
 
             $this->ogTitle = $title;
             $this->ogImage = $image;
             $this->ogDescription = $description;
+            $this->ogLogo = $Logo;
+
 
             // 2. Generate slug base and slug with timestamp
             $slugBase = Str::slug($title);
@@ -119,14 +149,14 @@ class DetectorController extends Controller
             EOD;
 
             $response = Http::withToken(config('services.openai.key'))
-                ->post('https://api.deepseek.com', [
-                    'model' => 'deepseek-chat',
+                ->post('https://api.openai.com/v1/chat/completions', [
+                    'model' => 'gpt-4o-mini',
                     'messages' => [
                         ['role' => 'user', 'content' => $prompt],
                     ],
                     'max_tokens' => 10,
                 ]);
-            Logger($response);
+            logger($response);
 
             $answer = $response->json('choices.0.message.content') ?? '';
             preg_match('/\d{1,3}/', $answer, $matches);
@@ -150,21 +180,13 @@ class DetectorController extends Controller
             Description: {$this->ogDescription}
             EOD;
 
-            // $response = Http::withToken(config('services.openai.key'))
-            //     ->post('https://api.openai.com/v1/chat/completions', [
-            //         'model' => 'gpt-4o-mini',
-            //         'messages' => [
-            //             ['role' => 'user', 'content' => $prompt],
-            //         ],
-            //         'max_tokens' => 1000,
-            //     ]);
             $response = Http::withToken(config('services.openai.key'))
-                ->post('https://api.deepseek.com', [
-                    'model' => 'deepseek-chat',
+                ->post('https://api.openai.com/v1/chat/completions', [
+                    'model' => 'gpt-4o-mini',
                     'messages' => [
                         ['role' => 'user', 'content' => $prompt],
                     ],
-                    'max_tokens' => 10,
+                    'max_tokens' => 1000,
                 ]);
 
             $answer = $response->json('choices.0.message.content') ?? '';
@@ -191,6 +213,8 @@ class DetectorController extends Controller
                 'image' => $image,
                 'explanation' => $explanation,
                 'slug' => $slug,
+                'logo' => $Logo
+                
             ]);
 
 
