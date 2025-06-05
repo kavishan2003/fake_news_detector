@@ -17,7 +17,7 @@
 
             <div
                 class="max-w-2xl w-full mx-auto bg-white p-8 rounded-2xl shadow-xl transform transition-all duration-300 hover:scale-105">
-                <form action="/checkFakeness" method="post">
+                <form action="/checkFakeness" method="post" id="check-form" >
                     @if (session('alert'))
                         <div id="alert-message"
                             class="bg-gray-200 border-l-4 border-red-200 text-red-500 p-4 mb-4 rounded-md flex justify-between items-center">
@@ -197,6 +197,8 @@
         });
     </script>
 @endscript
+
+{{-- fakeness bar --}}
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         const alertBox = document.getElementById("fakeness-bar");
@@ -210,6 +212,8 @@
         }
     });
 </script>
+
+{{-- alert-message --}}
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         const alertBox = document.getElementById("alert-message");
@@ -223,3 +227,5 @@
         }
     });
 </script>
+
+

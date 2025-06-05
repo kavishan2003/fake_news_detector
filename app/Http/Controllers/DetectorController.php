@@ -114,6 +114,14 @@ class DetectorController extends Controller
             ];
         }
     }
+    public function show($slug)
+    {
+        $article = FakenessCheck::where('slug', $slug)->firstOrFail();
+
+        return view('livewire.fakeness-detail', [
+            'article' => $article
+        ]);
+    }
 
     public function checkFakeness(Request $request)
     {
@@ -130,9 +138,16 @@ class DetectorController extends Controller
 
         $cacheKey = 'fakeness_score_' . md5($userUrl);
 
+        Logger($cacheKey);
         if (Cache::has($cacheKey)) {
-
-            return redirect()->back()->with('alert', 'This URL has already been checked before.');
+            $existing = FakenessCheck::where('url', $userUrl)->first();
+            if ($existing) {
+                return redirect()->route('fakeness.detail', ['slug' => $existing->slug]);
+               
+            } else {
+                // fallback in case DB entry was deleted but cache exists
+                return redirect()->back()->with('alert', 'This URL has already been checked before, but no detail page was found.');
+            }
         }
 
 
