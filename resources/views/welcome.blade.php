@@ -29,7 +29,7 @@
     <!-- Other head elements -->
     </head>
 
-    <body class="bg-gray-50 text-gray-800">
+    <body class="bg-gradient-to-br bg-blue-100 min-h-screen">
 
         @if (isset($fakenessScore))
             @livewire('detector',['fakenessScore' => $fakenessScore])

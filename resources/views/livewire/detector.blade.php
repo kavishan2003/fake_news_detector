@@ -1,13 +1,14 @@
 <div>
 
     <div
-        class="container mx-auto px-4 py-10 min-h-screen flex flex-col lg:flex-row items-center lg:items-start justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
+        class="container mx-auto px-4 py-10 min-h-screen flex flex-col lg:flex-row items-center lg:items-start justify-center bg-gradient-to-br bg-blue-100">
 
 
         {{-- Main Content --}}
         <main class="flex-1 overflow-y-auto p-4 lg:p-0 ">
             <div class="text-center mb-12 animate-fade-in-down">
-                <h1 class="text-5xl font-extrabold text-blue-700  tracking-tight">Fake News Detector</h1>
+                <h1 class="text-6xl font-extrabold text-blue-800 tracking-tight leading-tight drop-shadow-md">Fake News
+                    Detector</h1>
                 <p class="text-gray-600 mt-5 text-xl">Discover if a news article is fake or real. Paste the article URL
                     below to check!</p>
             </div>
