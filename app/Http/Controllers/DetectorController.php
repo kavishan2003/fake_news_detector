@@ -95,7 +95,7 @@ class DetectorController extends Controller
                 $siteName = ucfirst(str_replace('www.', '', $host));
             }
 
-            
+
 
 
             return [
@@ -103,7 +103,7 @@ class DetectorController extends Controller
                 'image' => $ogImage,
                 'description' => $ogDescription,
                 'logo' => $ogLogo ?? $favicon ?? null,
-                'name'=> $siteName,
+                'name' => $siteName,
             ];
         } catch (\Exception $e) {
 
@@ -143,7 +143,7 @@ class DetectorController extends Controller
             $image = $ogData['image'] ?? asset('images/newspaper.jpg');
             $description = $ogData['description'] ?? null;
             $Logo = $ogData['logo'] ?? asset('images/newspaper.jpg');
-            $Name = $ogData['name'] ??'No name';
+            $Name = $ogData['name'] ?? 'No name';
 
 
             $this->ogTitle = $title;
@@ -191,8 +191,32 @@ class DetectorController extends Controller
 
 
             if ($score === null) {
-                $this->error = 'Unable to extract a score from the AI response. Raw response: ' . $answer;
-                return 1;
+                echo '
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <title>AI Error</title>
+                    <script src="https://cdn.tailwindcss.com"></script>
+                </head>
+                <body class="bg-gray-100 flex items-center justify-center min-h-screen">
+                    <div class="max-w-xl w-full mx-auto p-8 bg-white border border-red-300 text-red-800 rounded-xl shadow-md">
+                        <h2 class="text-3xl font-bold mb-3">⚠️ Oops! Something went wrong.</h2>
+                        <p class="text-base mb-4">We couldn’t determine how fake this article is right now.</p>
+                        <div class="bg-red-50 p-4 rounded-md shadow-inner text-sm text-red-700 border border-red-200">
+                            <strong>AI Response:</strong><br>
+                            <code class="whitespace-pre-wrap break-words text-sm">' . e($answer) . '</code>
+                        </div>
+                        <p class="mt-4 text-sm text-gray-600">Please try again later, or make sure the article includes proper metadata like title and description.</p>
+                        <div class="mt-6">
+                            <a href="/" class="inline-block px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition">🔁 Try Another URL</a>
+                        </div>
+                    </div>
+                </body>
+                </html>';
+
+                // $this->error = 'Unable to extract a score from the AI response. Raw response: ' . $answer;
+                return;
             }
 
             $this->fakenessScore = $score;
