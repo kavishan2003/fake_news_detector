@@ -27,7 +27,7 @@ class DetectorController extends Controller
     public $Title;
     public $ogLogo;
     public $ogName;
-
+    public $order;
 
 
     public function fetchOGMeta($url)
@@ -126,6 +126,18 @@ class DetectorController extends Controller
     public function checkFakeness(Request $request)
     {
 
+        if (FakenessCheck::count() == 0) {
+
+            $order = FakenessCheck::count();
+            $order = $order + 1;
+        } else {
+
+            $lastRecord = FakenessCheck::orderBy('order_num', 'desc')->first();
+            $lastOrderNum = $lastRecord ? $lastRecord->order_num : null;
+            $order = $lastOrderNum  + 2;
+        }
+
+
         $userUrl = $request->input('url');
 
         $this->fakenessScore = null;
@@ -138,12 +150,21 @@ class DetectorController extends Controller
 
         $cacheKey = 'fakeness_score_' . md5($userUrl);
 
-        Logger($cacheKey);
+        // Logger($cacheKey);
         if (Cache::has($cacheKey)) {
             $existing = FakenessCheck::where('url', $userUrl)->first();
             if ($existing) {
-                return redirect()->route('fakeness.detail', ['slug' => $existing->slug]);
-               
+                $lastRecord = FakenessCheck::orderBy('order_num', 'desc')->first();
+                $lastOrderNum = $lastRecord ? $lastRecord->order_num : null;
+
+                $order = $lastOrderNum + 1;
+
+                $existing->order_num = $order;  // Set your new order_num value here
+                $existing->save();
+                Logger($existing->url);
+                return view('welcome', [
+                    'fakenessScore' => $existing->score,
+                ]);
             } else {
                 // fallback in case DB entry was deleted but cache exists
                 return redirect()->back()->with('alert', 'This URL has already been checked before, but no detail page was found.');
@@ -198,7 +219,7 @@ class DetectorController extends Controller
                     ],
                     'max_tokens' => 10,
                 ]);
-            logger($response);
+            // logger($response);
 
             $answer = $response->json('choices.0.message.content') ?? '';
             preg_match('/\d{1,3}/', $answer, $matches);
@@ -281,6 +302,7 @@ class DetectorController extends Controller
                 'slug' => $slug,
                 'logo' => $Logo,
                 'name' => $Name,
+                'order_num' => $order,
 
             ]);
 

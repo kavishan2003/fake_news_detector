@@ -15,6 +15,7 @@ class FakenessCheck extends Model
         'slug',
         'logo',
         'name',
+        'order_num',
 
     ];
 }

@@ -22,6 +22,8 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->text('logo')->nullable();
             $table->string('name')->nullable();
+            $table->unsignedBigInteger('order_num')->nullable();
+            
         });
     }
 

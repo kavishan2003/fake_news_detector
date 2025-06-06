@@ -258,7 +258,7 @@ class Detector extends Component
        
         return view('livewire.detector', [
            
-            'history' => FakenessCheck::latest()->paginate($this->perPage),
+            'history' => FakenessCheck::orderBy('order_num','desc')->paginate($this->perPage),
            
         ]);
     }
