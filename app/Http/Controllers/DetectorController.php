@@ -140,6 +140,34 @@ class DetectorController extends Controller
 
         $userUrl = $request->input('url');
 
+        //checking the URL is it  a news or what by gpt
+
+        $prompt = <<<EOD
+            Based on the following news article metadata and URL, Tell me whether its a news or not a news page (if its a news page return 1 else return 0 )
+            don't take google.com youtube.com facebook.com and other main domain as newses observe the link correctly and state whether it is news or not exactly.
+            (give only 1 and 0 nothing else)
+            URL: {$userUrl}
+            Title: {$this->ogTitle}
+            Description: {$this->ogDescription}
+            EOD;
+
+        $response = Http::withToken(config('services.openai.key'))
+            ->post('https://api.openai.com/v1/chat/completions', [
+                'model' => 'gpt-4o-mini',
+                'messages' => [
+                    ['role' => 'user', 'content' => $prompt],
+                ],
+                'max_tokens' => 1000,
+            ]);
+
+        $answer = $response->json('choices.0.message.content') ?? '';
+
+        // dd($answer);
+
+        if ($answer == 0) {
+            return back()->with('alert', 'It does not look like this is a news article, please try again.');
+        }
+
         $this->fakenessScore = null;
 
 
