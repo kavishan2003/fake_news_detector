@@ -1,16 +1,7 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
-        {{-- <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-
-        <title>Fake news Detector</title>
-
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
-
-        --}}
+     
         <!-- Character Encoding -->
         <meta charset="UTF-8">
 
@@ -40,11 +31,11 @@
         <meta property="og:site_name" content="Fake News Detector">
 
         <meta name="twitter:card" content="summary_large_image">
-        <meta name="twitter:title" content="Fake News Detector>
+        <meta name="twitter:title" content="Fake News Detector">
         <meta name="twitter:description" content="Check if a news article is real or fake">
         <meta name="twitter:image" content="https://fakenewsdetector.co/logo.jpg">
 
-{{-- <link rel="icon" href="/favicon.ico" type="image/x-icon"> --}}
+
         <!-- Styles / Scripts -->
         @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
             @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -74,8 +65,3 @@
 </html>
 
 
-
-{{-- 0x4AAAAAABdJ-1P6Bxpw7ppD --}}
-
-
-{{-- 0x4AAAAAABdJ-0F_g5nMrZzkSzRZAy1_IAo --}}

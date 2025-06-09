@@ -20,7 +20,7 @@ class Detector extends Component
     public string $url = '';
     public ?int $fakenessScore = null;
     public string $error = '';
-  
+
     public $perPage = 12;
     public ?string $ogTitle = null;
     public ?string $ogImage = null;
@@ -57,7 +57,7 @@ class Detector extends Component
                 'description' => $ogDescription
             ];
         } catch (\Exception $e) {
-            
+
             return [
                 'title' => null,
                 'image' => asset('images/newspaper.jpg'),
@@ -84,11 +84,9 @@ class Detector extends Component
             if ($response->successful()) {
                 return $response->json('choices.0.message.content') ?? 'No explanation provided.';
             } else {
-                // \Log::error("OpenAI API error for explanation: " . $response->body());
                 return 'Failed to get an explanation from the AI service.';
             }
         } catch (\Exception $e) {
-            // \Log::error("Exception when fetching explanation from OpenAI: " . $e->getMessage());
             return 'An error occurred while generating the explanation.';
         }
     }
@@ -98,7 +96,7 @@ class Detector extends Component
         $this->reset(['fakenessScore', 'error', 'explanation', 'ogTitle', 'ogImage', 'ogDescription']);
         $this->fakenessScore = null;
 
-   
+
 
 
         if (!filter_var($this->url, FILTER_VALIDATE_URL)) {
@@ -115,14 +113,14 @@ class Detector extends Component
             $this->ogImage = $cachedData['image'];
             $this->explanation = $cachedData['explanation'];
             $this->ogDescription = $cachedData['description'];
-     
+
             return;
         }
 
         try {
-            // 1. Fetch OG metadata first
+            //  Fetch OG metadata first
             $ogData = $this->fetchOGMeta($this->url);
-            $title = $ogData['title'] ?? 'Unknown Article'; // fallback
+            $title = $ogData['title'] ?? 'Unknown Article';
             $image = $ogData['image'] ?? asset('images/newspaper.jpg');
             $description = $ogData['description'] ?? null;
 
@@ -130,18 +128,18 @@ class Detector extends Component
             $this->ogImage = $image;
             $this->ogDescription = $description;
 
-            // 2. Generate slug base and slug with timestamp
+            // Generate slug base and slug with timestamp
             $slugBase = Str::slug($title);
             $timestamp = now()->format('YmdHis');
             $slug = $slugBase . '-' . $timestamp;
 
-            // 3. Ensure slug uniqueness
+            //  Ensure slug uniqueness
             while (FakenessCheck::where('slug', $slug)->exists()) {
                 $timestamp = now()->addSecond()->format('YmdHis');
                 $slug = $slugBase . '-' . $timestamp;
             }
 
-            // 4. Prepare prompt and call OpenAI for fakeness score
+            // Prepare prompt and call OpenAI for fakeness score
             $prompt = <<<EOD
                 Based on the following news article metadata and URL, determine how fake this news article is.
                 Give me a percentage score from 0 to 100%, where 100% is completely fake and 0% is completely true and factual.
@@ -164,17 +162,16 @@ class Detector extends Component
             $answer = $response->json('choices.0.message.content') ?? '';
             preg_match('/\d{1,3}/', $answer, $matches);
             $score = isset($matches[0]) ? min((int)$matches[0], 100) : null;
-            // $score = 80;
+
 
             if ($score === null) {
                 $this->error = 'Unable to extract a score from the AI response. Raw response: ' . $answer;
-                // \Log::warning("AI did not return a score for URL: {$this->url}. Raw response: {$answer}");
                 return;
             }
 
             $this->fakenessScore = $score;
 
-            // 5. Fetch explanation from OpenAI
+            //  Fetch explanation from OpenAI
             $prompt = <<<EOD
                 Based on the following news article metadata and URL, give me a brief explanation about this news article and why it is considered fake news.
                  If it's not considered fake, then show why it's not fake. (around 500 words)
@@ -208,7 +205,7 @@ class Detector extends Component
                 'explanation' => $explanation,
             ], now()->addHours(24));
 
-            // 6. Save all data to DB
+            // Save all data to DB
             FakenessCheck::create([
                 'url' => $this->url,
                 'score' => $score,
@@ -218,22 +215,15 @@ class Detector extends Component
                 'slug' => $slug,
             ]);
 
- 
+
             $this->url = '';
             $this->dispatch('fakeness-check-complete');
-
-            
-
         } catch (\Exception $e) {
             $this->error = 'Failed to process check: ' . $e->getMessage();
-         
         }
     }
 
-    public function mount()
-    {
-      
-    }
+    public function mount() {}
 
 
 
@@ -243,27 +233,17 @@ class Detector extends Component
         return Str::slug($title) . '-' . $timestamp;
     }
 
-    // delete function
-    public function deleteARC($id)
-    {
-        $delete = FakenessCheck::findOrFail($id);
-        $delete->delete();
-        session()->flash('message', 'Article deleted successfully.');
-    }
-
-
-
     public function render()
     {
-       
+
         return view('livewire.detector', [
-           
-            'history' => FakenessCheck::orderBy('order_num','desc')->paginate($this->perPage),
-           
+
+            'history' => FakenessCheck::orderBy('order_num', 'desc')->paginate($this->perPage),
+
         ]);
     }
 
-        public function rendered() {}
+    public function rendered() {}
 
     public function resetFakenessScore()
     {

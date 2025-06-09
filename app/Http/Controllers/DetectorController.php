@@ -187,7 +187,7 @@ class DetectorController extends Controller
 
                 $order = $lastOrderNum + 1;
 
-                $existing->order_num = $order;  // Set your new order_num value here
+                $existing->order_num = $order;  
                 $existing->save();
                 Logger($existing->url);
                 return view('welcome', [
@@ -279,7 +279,6 @@ class DetectorController extends Controller
                 </body>
                 </html>';
 
-                // $this->error = 'Unable to extract a score from the AI response. Raw response: ' . $answer;
                 return;
             }
 
@@ -310,7 +309,7 @@ class DetectorController extends Controller
 
             $this->explanation = $explanation;
 
-            // dump($score);
+           
             // Cache the score and other relevant data for 24 hours
             Cache::put($cacheKey, [
                 'score' => $score,

@@ -1,6 +1,5 @@
 <div>
 
-
     <div>
 
         {{-- navbar --}}
@@ -32,11 +31,6 @@
             </div>
         </nav>
 
-
-
-
-
-
         {{-- Bar Chart for Average Fakeness Scores --}}
         <div class="container mx-auto px-6 py-20">
             <div class="text-center mb-12 animate-fade-in-down">
@@ -54,32 +48,6 @@
                         <canvas id="articlePieChart"></canvas>
                     </div>
                 </div>
-
-                {{-- <div class="mt-12">
-                    <h2 class="text-3xl font-extrabold text-gray-800 mb-8 text-center">Domain Statistics</h2>
-                    @if (count($domainAnalytics) > 0)
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            @foreach ($domainAnalytics as $analytics)
-                                <div
-                                    class="bg-white rounded-2xl shadow-lg p-6 transform transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl flex flex-col items-center justify-center text-center">
-                                    <p class="text-xl font-bold text-blue-700 mb-2">{{ $analytics['domain'] }}</p>
-                                    <div class="flex items-center justify-center space-x-4">
-                                        <div class="text-gray-700 text-lg font-semibold">
-                                            Articles: <span
-                                                class="text-2xl font-extrabold text-indigo-600">{{ $analytics['article_count'] }}</span>
-                                        </div>
-                                        <div class="text-gray-700 text-lg font-semibold">
-                                            Avg Score: <span
-                                                class="text-2xl font-extrabold {{ $analytics['average_score'] >= 70 ? 'text-red-600' : ($analytics['average_score'] >= 30 ? 'text-yellow-600' : 'text-green-600') }}">{{ $analytics['average_score'] }}%</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
-                    @else
-                        <p class="text-center text-gray-600 text-lg">No article data available for analytics yet.</p>
-                    @endif
-                </div> --}}
             </div>
         </div>
     </div>
@@ -92,10 +60,6 @@
         </div>
 
         <div class="max-w-4xl mx-auto bg-white p-8 rounded-2xl shadow-xl mb-12">
-            {{-- <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Average Fakeness by Domain</h2>
-            <div class="mb-8">
-                <canvas id="fakenessChart"></canvas>
-            </div> --}}
 
             <h3 class="text-2xl font-bold text-gray-800 mb-4">Domain Breakdown</h3>
             @if (count($domainAnalytics) > 0)
@@ -136,19 +100,20 @@
 @script
     <script src="https://cdn.jsdelivr.net/npm/chart.js">
         document.addEventListener('livewire:initialized', () => {
-            // Ensure Chart.js is loaded and canvas exists
+
+
             const ctx = document.getElementById('fakenessChart');
 
             if (ctx) {
                 new Chart(ctx, {
-                    type: 'bar', // You can change this to 'pie', 'line', etc.
+                    type: 'bar',
                     data: {
-                        labels: @json($chartLabels), // Data from Livewire component
+                        labels: @json($chartLabels),
                         datasets: [{
                             label: 'Average Fakeness Score (%)',
-                            data: @json($chartData), // Data from Livewire component
+                            data: @json($chartData),
                             backgroundColor: [
-                                // Dynamically color bars based on score (example)
+
                                 @foreach ($chartData as $score)
                                     '{{ $score >= 70 ? '#ef4444' : ($score >= 30 ? '#f59e0b' : '#22c55e') }}',
                                 @endforeach
@@ -163,11 +128,11 @@
                     },
                     options: {
                         responsive: true,
-                        maintainAspectRatio: false, // Allow canvas to resize freely
+                        maintainAspectRatio: false,
                         scales: {
                             y: {
                                 beginAtZero: true,
-                                max: 100, // Fakeness score is 0-100%
+                                max: 100,
                                 title: {
                                     display: true,
                                     text: 'Average Fakeness Score (%)'
@@ -182,7 +147,7 @@
                         },
                         plugins: {
                             legend: {
-                                display: false // No need for legend if only one dataset
+                                display: false
                             },
                             tooltip: {
                                 callbacks: {
@@ -203,7 +168,7 @@
 
 
         document.addEventListener('livewire:navigated', () => {
-            // Bar Chart (existing)
+
             const barCtx = document.getElementById('fakenessBarChart');
             if (barCtx) {
                 new Chart(barCtx, {
@@ -274,15 +239,15 @@
                             label: 'Number of Articles',
                             data: @json($pieChartData),
                             backgroundColor: [
-                                'rgba(255, 99, 132, 0.8)', // Red
-                                'rgba(54, 162, 235, 0.8)', // Blue
-                                'rgba(255, 206, 86, 0.8)', // Yellow
-                                'rgba(75, 192, 192, 0.8)', // Teal
-                                'rgba(153, 102, 255, 0.8)', // Purple
-                                'rgba(255, 159, 64, 0.8)', // Orange
-                                'rgba(102, 255, 102, 0.8)', // Light Green
-                                'rgba(255, 102, 204, 0.8)', // Pink
-                                'rgba(102, 204, 255, 0.8)' // Light Blue
+                                'rgba(255, 99, 132, 0.8)',
+                                'rgba(54, 162, 235, 0.8)',
+                                'rgba(255, 206, 86, 0.8)',
+                                'rgba(75, 192, 192, 0.8)',
+                                'rgba(153, 102, 255, 0.8)',
+                                'rgba(255, 159, 64, 0.8)',
+                                'rgba(102, 255, 102, 0.8)',
+                                'rgba(255, 102, 204, 0.8)',
+                                'rgba(102, 204, 255, 0.8)'
                             ],
                             borderColor: '#fff',
                             borderWidth: 2

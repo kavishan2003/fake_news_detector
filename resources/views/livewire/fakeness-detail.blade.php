@@ -1,4 +1,5 @@
 <div class="max-w-3xl mx-auto p-6">
+
     <h1 class="text-3xl font-bold mb-4">{{ $article->title }}</h1>
     <img src="{{ $article->image }}" alt="Thumbnail" class="mb-4 w-full h-auto rounded-lg shadow">
 
@@ -21,7 +22,7 @@
         View Full Article
     </a>
 
-    <!-- Facebook Like + Share -->
+    <!-- Facebook Like & Share -->
     <div class="mt-6">
         <div class="fb-like" data-href="{{ url()->current() }}" data-width="" data-layout="button_count"
             data-action="like" data-size="large" data-share="true"></div>

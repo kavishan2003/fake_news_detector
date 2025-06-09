@@ -4,18 +4,27 @@
         class="container mx-auto px-4 py-2 min-h-screen flex flex-col lg:flex-row items-center lg:items-start justify-center bg-gradient-to-br bg-blue-100">
 
 
+        {{-- Background Logo Image --}}
+        <img src="images/logo.jpg" alt="Background Fake News Detector Logo"
+            class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2
+                   w-3/4 lg:w-1/2 opacity-5 blur-xl -z-10 rotate-6 pointer-events-none max-w-3xl max-h-3xl"
+            style="object-fit: contain;">
+
         {{-- Main Content --}}
         <main class="flex-1 overflow-y-auto p-4 lg:p-0 ">
             <div class="text-center mb-12 animate-fade-in-down">
+
+
                 <h1
                     class="text-[8vw] md:text-6xl font-extrabold text-blue-800 tracking-tight leading-tight drop-shadow-md whitespace-nowrap">
                     Fake News Detector
                 </h1>
+                {{-- <img src="images/logo.jpg" alt="Fake News Detector Logo" class="h-auto max-w-full mx-auto rounded-2xl"
+                    style="max-height: 150px; "> --}}
+
                 <p class="text-gray-600 mt-5 text-xl">Discover if a news article is fake or real. Paste the article URL
                     below to check!</p>
             </div>
-
-
 
             <div
                 class="max-w-2xl w-full mx-auto bg-white p-8 rounded-2xl shadow-xl transform transition-all duration-300 hover:scale-105">
@@ -35,8 +44,6 @@
                             </button>
                         </div>
                     @endif
-
-
 
                     @csrf
                     <div class="mb-6">
@@ -90,7 +97,9 @@
                                     $textColor = 'text-yellow-700';
                                     $message = 'Exercise caution, it might be misleading.';
                                 }
+
                             @endphp
+
                             <div class="w-full h-5 mt-4 bg-gray-200 rounded-full overflow-hidden shadow-md">
                                 <div class="h-full rounded-full transition-all duration-700 ease-out {{ $barColor }}"
                                     style="width: {{ $fakenessScore }}%;"></div>
@@ -105,13 +114,10 @@
             </div>
 
 
-
             @if ($history->count() > 0)
 
                 <div class="mt-20 w-full max-w-5xl mx-auto animate-fade-in-up">
                     <h2 class="text-3xl font-extrabold text-gray-800 mb-8 text-center">Previously Analyzed Articles</h2>
-
-
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 ">
                         @foreach ($history as $article)
                             <div
@@ -210,7 +216,7 @@
                 alertBox.classList.add("opacity-0", "transition-opacity", "duration-1000");
                 setTimeout(() => {
                     alertBox.style.display = "none";
-                }, 1000); // wait for fade-out transition to finish
+                }, 1000); 
             }, 8000);
         }
     });
@@ -225,8 +231,8 @@
                 alertBox.classList.add("opacity-0", "transition-opacity", "duration-700");
                 setTimeout(() => {
                     alertBox.style.display = "none";
-                }, 700); // wait for the fade-out transition
-            }, 4000); // 5 seconds delay
+                }, 700); 
+            }, 4000); 
         }
     });
 </script>
