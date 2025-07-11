@@ -40,10 +40,18 @@ class FetchRssFeeds extends Command
                 foreach ($xml->channel->item as $item) {
                     // logger("Found link: " . $item->link);
                     $url = (string) $item->link;
-                    ScrapedArticles::firstOrCreate(
-                        ['url' => $url],
-                        ['source' => parse_url($url, PHP_URL_HOST)] // Use only the host part
-                    );
+
+                    $old_url = ScrapedArticles::where('url', $url)->first();
+
+                    if ($url == isset($old_url)) {
+                        continue;
+                    } else {
+
+                        ScrapedArticles::firstOrCreate(
+                            ['url' => $url],
+                            ['source' => parse_url($url, PHP_URL_HOST)] // Use only the host part
+                        );
+                    }
                 }
             } catch (\Exception $e) {
                 $this->error("Error processing feed: $feedUrl - " . $e->getMessage());

@@ -8,7 +8,6 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-Schedule::command("rss:fetch")->everyWeek();
-
+Schedule::command("rss:fetch")->weekly();
 
 Schedule::command("app:run-fakeness-checks")->everyTenSeconds();
