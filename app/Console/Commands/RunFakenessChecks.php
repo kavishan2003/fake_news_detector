@@ -38,8 +38,6 @@ class RunFakenessChecks extends Command
             return;
         }
 
-
-
         $detector = new DetectorController();
 
         $detector->url = $url->url;
@@ -50,6 +48,9 @@ class RunFakenessChecks extends Command
 
         ScrapedArticles::where('url', $url->url)->update(['checked' => 1]);
 
+        logger('done');
+
+        
         // $detector = new Detector();
         // $detector->url = $url->url;
 
@@ -59,8 +60,6 @@ class RunFakenessChecks extends Command
         // } catch (\Exception $e) {
         //     $this->error("Error checking fakeness: " . $e->getMessage());
         // }
-
-        logger('done');
         // logger('Running fakeness checks...');
         // $articles = ScrapedArticles::where('checked', false)->take(10)->get(); // batch 10 at a time
 

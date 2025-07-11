@@ -348,6 +348,14 @@ class DetectorController extends Controller
 
         logger('Running fakeness check for URL: ' . $this->url);
 
+        if (FakenessCheck::where('url', $this->url)->exists()) {
+            logger('URL already processed: ' . $this->url);
+            return; // Exit early, prevent duplicate processing
+        }
+
+        //i want to set a only one time to run this suddenly
+
+
         if (FakenessCheck::count() == 0) {
 
             $order = FakenessCheck::count();
