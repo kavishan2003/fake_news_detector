@@ -93,6 +93,7 @@ class Detector extends Component
 
     public function checkFakeness()
     {
+        logger('Running fakeness check for URL: ' . $this->url);
         $this->reset(['fakenessScore', 'error', 'explanation', 'ogTitle', 'ogImage', 'ogDescription']);
         $this->fakenessScore = null;
 
