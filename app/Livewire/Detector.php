@@ -99,7 +99,7 @@ class Detector extends Component
 
 
 
-        if (!filter_var($this->url, FILTER_VALIDATE_URL)) {
+        if (!filter_var($this->url, \FILTER_VALIDATE_URL)) {
             $this->addError('url', 'Please enter a valid URL.');
             return;
         }

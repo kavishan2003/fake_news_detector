@@ -19,6 +19,8 @@ class FakenessDetail extends Component
 
     public function render()
     {
-        return view('livewire.fakeness-detail');
+        return view('livewire.fakeness-detail', [
+            'article' => $this->article,
+        ]);
     }
-}   
+}
