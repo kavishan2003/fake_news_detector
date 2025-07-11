@@ -58,12 +58,12 @@
 
                     </div>
 
-                    <div class="mb-6">
+                    {{-- <div class="mb-6">
                         <div class="bg-gray-50 text-gray-500 text-center border border-gray-200 rounded-xl p-5 cf-turnstile flex items-center justify-center"
                             data-sitekey="{{ config('services.turnstile.key') }}" data-theme="{{ $theme ?? 'light' }}">
                             <p class="text-sm">Please complete the captcha</p>
                         </div>
-                    </div>
+                    </div> --}}
 
                     <div id="urlError" class="hidden text-red-500 text-sm mt-1"></div>
                     <button type="submit"
