@@ -10,4 +10,4 @@ Artisan::command('inspire', function () {
 
 Schedule::command("rss:fetch")->weekly();
 
-Schedule::command("app:run-fakeness-checks")->everyTenSeconds();
+Schedule::command("app:run-fakeness-checks")->everyThirtyMinutes();
