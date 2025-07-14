@@ -11,4 +11,4 @@ Artisan::command('inspire', function () {
 Schedule::command("rss:fetch")->weekly();
 
 // Schedule::command("app:run-fakeness-checks")->everyThirtyMinutes();
-Schedule::command("app:run-fakeness-checks")->everyThirtyMinutes();
+Schedule::command("app:run-fakeness-checks")->everyFiveMinutes();
