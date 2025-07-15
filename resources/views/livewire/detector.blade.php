@@ -156,8 +156,8 @@
                     </div>
 
                     @if (method_exists($history, 'links') && $history->total() > $history->perPage())
-                        <div class="mt-8 flex justify-center">
-                            <div class="bg-white p-4 rounded-lg shadow-md">
+                        <div class="mt-8 flex justify-center ">
+                            <div class="bg-transparent p-4 rounded-lg ">
                                 {{ $history->links('pagination::tailwind') }}
                             </div>
                         </div>
