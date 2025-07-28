@@ -18,6 +18,7 @@ RUN apt-get update && apt-get install -y \
     npm \
     && docker-php-ext-install pdo pdo_mysql zip mbstring exif pcntl bcmath
 
+    
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
